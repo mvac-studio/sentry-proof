@@ -60,11 +60,11 @@ func findSockets(id int) {
 
 		if strings.HasPrefix(link, "socket:") {
 
+			// EXPERIMENTAL: given the socket information use pcap to sniff the interface with that filter.
 			devices, err := pcap.FindAllDevs()
 			device := devices[0]
 			print("listening on ", device.Name)
 			handle, err := pcap.OpenLive(device.Name, int32(1024), false, 30*time.Second)
-			_ = handle.SetBPFFilter("tcp and port 54321")
 			source := gopacket.NewPacketSource(handle, handle.LinkType())
 			for packet := range source.Packets() {
 				fmt.Println(packet)
@@ -75,6 +75,8 @@ func findSockets(id int) {
 				fmt.Printf("Error connecting to %s\n", path)
 				continue
 			}
+			// END EXPERIMENTAL AREA
+
 			println(conn.LocalAddr())
 
 			fmt.Printf("Found socket: %s\n", link)
